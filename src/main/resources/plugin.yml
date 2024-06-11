@@ -1,0 +1,4 @@
+name: EntityToItem
+version: '${project.version}'
+main: net.uber.entitytoitem.EntityToItem
+api-version: '1.20'
