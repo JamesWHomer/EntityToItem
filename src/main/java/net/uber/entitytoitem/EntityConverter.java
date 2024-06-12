@@ -7,13 +7,15 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
+import java.util.Locale;
+
 public class EntityConverter {
 
     public static ItemStack getEntityEgg(Entity entity) {
 
         EntitySnapshot entitySnapshot = entity.createSnapshot();
         EntityType entityType = entity.getType();
-        Material spawnEggMaterial = getSpawnEggMaterial(entityType);
+        Material spawnEggMaterial = getSpawnEggMaterialExperimental(entityType);
 
         if (spawnEggMaterial == null) {
             throw new IllegalArgumentException("No spawn egg found for entity type: " + entityType);
@@ -55,4 +57,14 @@ public class EntityConverter {
             default: return null;
         }
     }
+
+    private static Material getSpawnEggMaterialExperimental(EntityType entityType) {
+        String eggName = entityType.name() + "_SPAWN_EGG";
+        try {
+            return Material.valueOf(eggName.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
 }
