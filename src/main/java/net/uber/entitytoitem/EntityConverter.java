@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntitySnapshot;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
 import java.util.Locale;
@@ -26,6 +27,12 @@ public class EntityConverter {
         if (meta != null) {
             meta.setSpawnedEntity(entitySnapshot);
             spawnEgg.setItemMeta(meta);
+        }
+
+        ItemMeta itemMeta = (SpawnEggMeta) spawnEgg.getItemMeta();
+        if (itemMeta != null) {
+            itemMeta.setDisplayName(entity.getCustomName());
+            spawnEgg.setItemMeta(itemMeta);
         }
 
         return spawnEgg;
