@@ -1,6 +1,5 @@
 package net.uber.entitytoitem;
 
-import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -53,6 +52,7 @@ public class RightClickListener implements Listener {
             String itemID = ItemInfoExtractor.extractOraxen(this.allowedItemString);
             return Objects.equals(allowedID, itemID);
              */
+            return false;
         } else if (ItemInfoExtractor.isCMD(this.allowedItemString)) {
             int cmd = ItemInfoExtractor.extractCMD(this.allowedItemString);
             ItemMeta meta = item.getItemMeta();
