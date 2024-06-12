@@ -7,12 +7,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RightClickListener implements Listener {
 
-    private EntityToItem main;
-
-    public RightClickListener(EntityToItem main) {
-        this.main = main;
-    }
-
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
