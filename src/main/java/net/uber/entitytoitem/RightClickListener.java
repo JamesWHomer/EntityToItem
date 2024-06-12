@@ -1,10 +1,12 @@
 package net.uber.entitytoitem;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,6 +33,10 @@ public class RightClickListener implements Listener {
         Entity entity = event.getRightClicked();
         if (isAllowedEntity(entity)) {
             player.sendMessage("You right-clicked an allowed entity!");
+            ItemStack itemStack = EntityConverter.getEntityEgg(entity);
+            Location location = entity.getLocation();
+            location.getWorld().dropItemNaturally(location, itemStack);
+            entity.remove();
         }
     }
 
