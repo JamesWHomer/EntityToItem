@@ -1,3 +1,7 @@
+item: "EMPTY"
+  # This is the item material that the player can use to right click an entity and have it convert into an item.
+  # By default it is EMPTY. Oraxen items are supported by ORAXEN{exampleitemid} as well as custom model data with CMD{69420}
+drop: true # When true the converted entity is dropped onto the ground, when false it is placed directly into the players inventory.
 allowedEntityList:
   - SHEEP
   - COW
