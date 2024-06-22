@@ -17,10 +17,7 @@ public final class EntityToItem extends JavaPlugin {
         configManager = new ConfigManager(this);
         configManager.saveDefaultConfig();
 
-        FileConfiguration config = configManager.getConfig();
-
-        getServer().getPluginManager().registerEvents(
-                new RightClickListener(config.getStringList("allowedEntityList"), config.getStringList("item"), config.getBoolean("drop")), this);
+        getServer().getPluginManager().registerEvents(new RightClickListener(configManager),this);
 
     }
 

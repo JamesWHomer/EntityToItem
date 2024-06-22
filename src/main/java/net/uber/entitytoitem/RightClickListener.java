@@ -3,12 +3,14 @@ package net.uber.entitytoitem;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
@@ -18,11 +20,21 @@ public class RightClickListener implements Listener {
 
     private final List<String> allowedEntityList;
     private final List<String> allowedItemStringList;
+    private final boolean drop;
+    private final boolean consumable;
 
-    public RightClickListener(List<String> allowedEntityList, List<String> allowedItemStringList, boolean drop) {
+    ConfigManager configManager;
 
-        this.allowedEntityList = allowedEntityList;
-        this.allowedItemStringList = allowedItemStringList;
+    public RightClickListener(ConfigManager configManager) {
+
+        this.configManager = configManager;
+
+        FileConfiguration config = configManager.getConfig();
+
+        this.allowedEntityList = config.getStringList("allowedEntityList");
+        this.allowedItemStringList = config.getStringList("item");
+        this.drop = config.getBoolean("drop");
+        this.consumable = config.getBoolean("consumable");
 
     }
 
@@ -82,9 +94,25 @@ public class RightClickListener implements Listener {
         if (isAllowedEntity(entity) && isPlayerHoldingAllowedItem(player)) {
             ItemStack itemStack = EntityConverter.getEntityEgg(entity);
             Location location = entity.getLocation();
+
+            if (consumable) {
+                removeItemFromHand(player);
+            }
+
             location.getWorld().dropItemNaturally(location, itemStack);
             entity.remove();
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 0.1f, 2f);
+        }
+    }
+
+    private void removeItemFromHand(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        ItemStack mainHand = inventory.getItemInMainHand();
+        int currentAmount = mainHand.getAmount();
+        if (currentAmount == 1) {
+            inventory.setItemInMainHand(null);
+        } else {
+            mainHand.setAmount(currentAmount - 1);
         }
     }
 
