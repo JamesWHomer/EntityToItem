@@ -55,14 +55,20 @@ public class RightClickListener implements Listener {
             return Objects.equals(allowedID, itemID);
              */
             return false;
-        } else if (ItemInfoExtractor.isCMD(this.allowedItemString)) {
+        }
+
+        if (ItemInfoExtractor.isCMD(this.allowedItemString)) {
             int cmd = ItemInfoExtractor.extractCMD(this.allowedItemString);
             ItemMeta meta = item.getItemMeta();
-            int itemCMD = meta.getCustomModelData();
-            return cmd == itemCMD;
-        } else {
-            return Objects.equals(item.getType().toString(), allowedItemString);
+            if (meta.hasCustomModelData()) {
+                int itemCMD = meta.getCustomModelData();
+                return cmd == itemCMD;
+            } else {
+                return false;
+            }
         }
+
+        return Objects.equals(item.getType().toString(), allowedItemString);
 
     }
 
