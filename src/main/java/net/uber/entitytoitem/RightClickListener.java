@@ -116,7 +116,7 @@ public class RightClickListener implements Listener {
                 if (player.getInventory().firstEmpty() != -1) {
                     player.getInventory().addItem(itemStack);
                 } else {
-                    location.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+                    location.getWorld().dropItem(player.getLocation(), itemStack);
                 }
 
             }
