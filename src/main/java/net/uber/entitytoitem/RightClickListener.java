@@ -1,5 +1,6 @@
 package net.uber.entitytoitem;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -24,6 +25,8 @@ public class RightClickListener implements Listener {
     private final boolean consumable;
     private final boolean tamedProtection;
 
+    private final String alreadyTamedMessage;
+
     ConfigManager configManager;
 
     public RightClickListener(ConfigManager configManager) {
@@ -37,6 +40,8 @@ public class RightClickListener implements Listener {
         this.drop = config.getBoolean("drop");
         this.consumable = config.getBoolean("consumable");
         this.tamedProtection = config.getBoolean("tamed-protection");
+
+        this.alreadyTamedMessage = config.getString("messages.already-tamed");
 
     }
 
@@ -98,6 +103,7 @@ public class RightClickListener implements Listener {
             if (tamedProtection && entity instanceof Tameable) {
                 Tameable tameable = (Tameable) entity;
                 if (tameable.getOwner() != null && player.getUniqueId() != tameable.getOwner().getUniqueId()) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', alreadyTamedMessage));
                     return;
                 }
             }

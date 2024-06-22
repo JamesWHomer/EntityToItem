@@ -22,5 +22,5 @@ allowedEntityList:
   - LLAMA
   - CAMEL
   - PARROT
-
 messages:
+  already-tamed: "&cThis entity has already been tamed by someone else!"
