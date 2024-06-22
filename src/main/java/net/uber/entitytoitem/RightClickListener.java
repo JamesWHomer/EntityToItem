@@ -13,8 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class RightClickListener implements Listener {
 
@@ -99,7 +98,30 @@ public class RightClickListener implements Listener {
                 removeItemFromHand(player);
             }
 
-            location.getWorld().dropItemNaturally(location, itemStack);
+            if (drop) {
+                location.getWorld().dropItemNaturally(location, itemStack);
+            } else {
+                /*
+                HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(itemStack);
+                if (!leftoverItems.isEmpty()) {
+                    //Should be only 1 idgaf
+                    int amount = leftoverItems.keySet().
+                    Collection<ItemStack> itemstack = leftoverItems.values();
+                    location.getWorld().dropItemNaturally(location, itemStack);
+                }
+                 */
+
+                //additem return value is a better method but I don't have internet rn and Idk how to deal with the hashmaps
+
+                if (player.getInventory().firstEmpty() != -1) {
+                    player.getInventory().addItem(itemStack);
+                } else {
+                    location.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+                }
+
+            }
+
+
             entity.remove();
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 0.1f, 2f);
         }
