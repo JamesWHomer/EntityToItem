@@ -1,7 +1,6 @@
 package net.uber.entitytoitem;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
@@ -18,12 +17,12 @@ import java.util.Objects;
 public class RightClickListener implements Listener {
 
     private final List<String> allowedEntityList;
-    private final String allowedItemString;
+    private final List<String> allowedItemStringList;
 
-    public RightClickListener(List<String> allowedEntityList, String allowedItemString, boolean drop) {
+    public RightClickListener(List<String> allowedEntityList, List<String> allowedItemStringList, boolean drop) {
 
         this.allowedEntityList = allowedEntityList;
-        this.allowedItemString = allowedItemString;
+        this.allowedItemStringList = allowedItemStringList;
 
     }
 
@@ -33,19 +32,23 @@ public class RightClickListener implements Listener {
 
     }
 
-    public boolean isAllowedPlayerItem(Player player) {
+    public boolean isPlayerHoldingAllowedItem(Player player) {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-        ItemStack itemInOffHand = player.getInventory().getItemInOffHand();
-        if (Objects.equals(this.allowedItemString, "EMPTY")) {
-            return itemInMainHand.getType() == Material.AIR && itemInOffHand.getType() == Material.AIR;
-        } else {
-            return isAllowedItem(itemInMainHand);
-        }
+        return isAllowedItem(itemInMainHand);
     }
 
     public boolean isAllowedItem(ItemStack item) {
+        for (String itemString : this.allowedItemStringList) {
+            if (isSameItem(item, itemString)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        if (ItemInfoExtractor.isOraxen(this.allowedItemString)) {
+    public boolean isSameItem(ItemStack item, String allowedItemString) {
+
+        if (ItemInfoExtractor.isOraxen(allowedItemString)) {
             /*
             if (!OraxenItems.exists(item)) {
                 return false;
@@ -57,8 +60,8 @@ public class RightClickListener implements Listener {
             return false;
         }
 
-        if (ItemInfoExtractor.isCMD(this.allowedItemString)) {
-            int cmd = ItemInfoExtractor.extractCMD(this.allowedItemString);
+        if (ItemInfoExtractor.isCMD(allowedItemString)) {
+            int cmd = ItemInfoExtractor.extractCMD(allowedItemString);
             ItemMeta meta = item.getItemMeta();
             if (meta.hasCustomModelData()) {
                 int itemCMD = meta.getCustomModelData();
@@ -76,7 +79,7 @@ public class RightClickListener implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        if (isAllowedEntity(entity) && isAllowedPlayerItem(player)) {
+        if (isAllowedEntity(entity) && isPlayerHoldingAllowedItem(player)) {
             ItemStack itemStack = EntityConverter.getEntityEgg(entity);
             Location location = entity.getLocation();
             location.getWorld().dropItemNaturally(location, itemStack);
