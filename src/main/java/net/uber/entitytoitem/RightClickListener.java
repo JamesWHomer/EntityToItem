@@ -74,7 +74,7 @@ public class RightClickListener implements Listener {
         if (ItemInfoExtractor.isCMD(allowedItemString)) {
             int cmd = ItemInfoExtractor.extractCMD(allowedItemString);
             ItemMeta meta = item.getItemMeta();
-            if (meta.hasCustomModelData()) {
+            if (meta != null && meta.hasCustomModelData()) {
                 int itemCMD = meta.getCustomModelData();
                 return cmd == itemCMD;
             } else {
