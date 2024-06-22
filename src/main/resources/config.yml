@@ -6,7 +6,6 @@ item:
   # By default it is AIR. CMD{69420} is supported for custom model data check, ignores the item material.
 drop: true # When true the converted entity is dropped onto the ground, when false it is placed directly into the players inventory.
 use-item: false
-direct-inventory: false
 allowedEntityList:
   - SHEEP
   - COW
