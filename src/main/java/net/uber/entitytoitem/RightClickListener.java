@@ -6,6 +6,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -21,6 +22,7 @@ public class RightClickListener implements Listener {
     private final List<String> allowedItemStringList;
     private final boolean drop;
     private final boolean consumable;
+    private final boolean tamedProtection;
 
     ConfigManager configManager;
 
@@ -34,6 +36,7 @@ public class RightClickListener implements Listener {
         this.allowedItemStringList = config.getStringList("item");
         this.drop = config.getBoolean("drop");
         this.consumable = config.getBoolean("consumable");
+        this.tamedProtection = config.getBoolean("tamed-protection");
 
     }
 
@@ -91,6 +94,14 @@ public class RightClickListener implements Listener {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
         if (isAllowedEntity(entity) && isPlayerHoldingAllowedItem(player)) {
+
+            if (tamedProtection && entity instanceof Tameable) {
+                Tameable tameable = (Tameable) entity;
+                if (tameable.getOwner() != null && player.getUniqueId() != tameable.getOwner().getUniqueId()) {
+                    return;
+                }
+            }
+
             ItemStack itemStack = EntityConverter.getEntityEgg(entity);
             Location location = entity.getLocation();
 
@@ -121,9 +132,9 @@ public class RightClickListener implements Listener {
 
             }
 
-
             entity.remove();
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 0.1f, 2f);
+
         }
     }
 
