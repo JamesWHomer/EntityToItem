@@ -5,14 +5,11 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -24,6 +21,7 @@ public class RightClickListener implements Listener {
     private final boolean drop;
     private final boolean consumable;
     private final boolean tamedProtection;
+    private final boolean loseInventory;
 
     private final String alreadyTamedMessage;
 
@@ -40,6 +38,7 @@ public class RightClickListener implements Listener {
         this.drop = config.getBoolean("drop");
         this.consumable = config.getBoolean("consumable");
         this.tamedProtection = config.getBoolean("tamed-protection");
+        this.loseInventory = config.getBoolean("lose-inventory");
 
         this.alreadyTamedMessage = config.getString("messages.already-tamed");
 
@@ -100,45 +99,61 @@ public class RightClickListener implements Listener {
         Entity entity = event.getRightClicked();
         if (isAllowedEntity(entity) && isPlayerHoldingAllowedItem(player)) {
 
-            if (tamedProtection && entity instanceof Tameable) {
-                Tameable tameable = (Tameable) entity;
+            List<ItemStack> itemsToDrop = new ArrayList<>();
+
+            if (tamedProtection && entity instanceof Tameable tameable) {
                 if (tameable.getOwner() != null && player.getUniqueId() != tameable.getOwner().getUniqueId()) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', alreadyTamedMessage));
                     return;
                 }
             }
 
-            ItemStack itemStack = EntityConverter.getEntityEgg(entity);
             Location location = entity.getLocation();
+
+            if (loseInventory && entity instanceof InventoryHolder inventoryHolder) {
+                Inventory inventory = inventoryHolder.getInventory();
+                ItemStack[] itemList = inventory.getContents();
+                itemsToDrop.addAll(List.of(itemList));
+                inventory.clear();
+            }
+
+            ItemStack entityEgg = EntityConverter.getEntityEgg(entity);
 
             if (consumable) {
                 removeItemFromHand(player);
             }
 
             if (drop) {
-                location.getWorld().dropItemNaturally(location, itemStack);
+                itemsToDrop.add(entityEgg);
             } else {
                 /*
-                HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(itemStack);
+                HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(entityEgg);
                 if (!leftoverItems.isEmpty()) {
                     //Should be only 1 idgaf
                     int amount = leftoverItems.keySet().
                     Collection<ItemStack> itemstack = leftoverItems.values();
-                    location.getWorld().dropItemNaturally(location, itemStack);
+                    location.getWorld().dropItemNaturally(location, entityEgg);
                 }
                  */
 
                 //additem return value is a better method but I don't have internet rn and Idk how to deal with the hashmaps
 
                 if (player.getInventory().firstEmpty() != -1) {
-                    player.getInventory().addItem(itemStack);
+                    player.getInventory().addItem(entityEgg);
                 } else {
-                    location.getWorld().dropItem(player.getLocation(), itemStack);
+                    itemsToDrop.add(entityEgg);
                 }
 
             }
 
             entity.remove();
+
+            for (ItemStack toDrop : itemsToDrop) {
+                if (toDrop != null) {
+                    location.getWorld().dropItemNaturally(location, toDrop);
+                }
+            }
+
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 0.1f, 2f);
 
         }
