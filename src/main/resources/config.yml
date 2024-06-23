@@ -8,6 +8,7 @@ item:
 drop: true # When true the converted entity is dropped onto the ground, when false it is placed directly into the players inventory.
 consumable: false # When true the item in the mainhand is used or if theres more than one its decreased by 1
 tamed-protection: true # When true, if the entity is owned by someone else you can't pick it up
+lose-inventory: true # When true, entities that are converted that have inventories, the items will drop. If false, the inventories will be kept within the entity's egg. Saddle however will be ignored.
 allowedEntityList:
   - SHEEP
   - COW
