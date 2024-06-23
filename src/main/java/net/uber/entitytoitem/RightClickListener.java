@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -113,18 +114,34 @@ public class RightClickListener implements Listener {
             if (loseInventory && entity instanceof InventoryHolder inventoryHolder) {
                 Inventory inventory = inventoryHolder.getInventory();
                 ItemStack[] itemList = inventory.getContents();
-                itemsToDrop.addAll(List.of(itemList));
-                inventory.clear();
+                if (itemList.length > 0) {
+                    for (ItemStack itemInQuestion : itemList) {
+                        if (itemInQuestion != null) {
+                            itemsToDrop.add(itemInQuestion);
+                        }
+                    }
+                    inventory.clear();
+                }
             }
 
             ItemStack entityEgg = EntityConverter.getEntityEgg(entity);
+
+            itemsToDrop.add(entityEgg);
 
             if (consumable) {
                 removeItemFromHand(player);
             }
 
+            entity.remove();
+
             if (drop) {
-                itemsToDrop.add(entityEgg);
+
+                for (ItemStack toDrop : itemsToDrop) {
+                    if (toDrop != null) {
+                        Objects.requireNonNull(location.getWorld()).dropItemNaturally(location, toDrop);
+                    }
+                }
+
             } else {
                 /*
                 HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(entityEgg);
@@ -138,20 +155,17 @@ public class RightClickListener implements Listener {
 
                 //additem return value is a better method but I don't have internet rn and Idk how to deal with the hashmaps
 
-                if (player.getInventory().firstEmpty() != -1) {
-                    player.getInventory().addItem(entityEgg);
-                } else {
-                    itemsToDrop.add(entityEgg);
+                for (ItemStack toDrop : itemsToDrop) {
+                    if (toDrop != null) {
+                        //because idk how to do the additem method, it just repeatedly checks for first item
+                        if (player.getInventory().firstEmpty() != -1) {
+                            player.getInventory().addItem(toDrop);
+                        } else {
+                            Objects.requireNonNull(location.getWorld()).dropItemNaturally(location, toDrop);
+                        }
+                    }
                 }
 
-            }
-
-            entity.remove();
-
-            for (ItemStack toDrop : itemsToDrop) {
-                if (toDrop != null) {
-                    location.getWorld().dropItemNaturally(location, toDrop);
-                }
             }
 
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 0.1f, 2f);
