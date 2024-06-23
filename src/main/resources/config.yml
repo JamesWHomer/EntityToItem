@@ -1,6 +1,5 @@
 item:
   - "BUCKET"
-  - "HOPPER"
   - "CMD{69420}"
   # This is the item material that the player can use to right click an entity and have it convert into an item.
   # By default it is AIR. CMD{69420} is supported for custom model data check, ignores the item material.
@@ -8,7 +7,7 @@ item:
 drop: true # When true the converted entity is dropped onto the ground, when false it is placed directly into the players inventory.
 consumable: false # When true the item in the mainhand is used or if theres more than one its decreased by 1
 tamed-protection: true # When true, if the entity is owned by someone else you can't pick it up
-lose-inventory: true # When true, entities that are converted that have inventories, the items will drop. If false, the inventories will be kept within the entity's egg. Saddle however will be ignored.
+lose-inventory: true # When true, entities that are converted that have inventories, the items will drop. If false, the inventories will be kept within the entity's egg.
 allowedEntityList:
   - SHEEP
   - COW
